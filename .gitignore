@@ -7,6 +7,6 @@
 */cmake_install.cmake
 .DS_Store
 
-Debug/
+Debug
 
 face-rec-model.yml
