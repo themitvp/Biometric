@@ -153,6 +153,19 @@ int main(int argc, const char *argv[]) {
     // We could get the histograms for example:
     vector<Mat> histograms = model->getMatVector("histograms");
     // But should I really visualize it? Probably the length is interesting:
-    cout << "Size of the histograms: " << histograms[0].total() << endl;
+    //cout << "Size of the histograms 0: " << histograms[0] << endl;
+    //for (int i = 0; i < histograms.size(); i++) {
+    //	cout << "Size of the histogram " << i << ": " << histograms[i].colRange(0,5) << endl;
+    //}
+    double compareThemiLucas_c = compareHist(histograms[0], histograms[23], CV_COMP_CORREL);
+    double compareThemiLucas_chi = compareHist(histograms[0], histograms[16], CV_COMP_CHISQR);
+    double compareThemiLucas_bh = compareHist(histograms[0], histograms[16], CV_COMP_BHATTACHARYYA);
+    double compareThemiLucas_i = compareHist(histograms[0], histograms[16], CV_COMP_INTERSECT);
+
+    cout << "Correlation: " << compareThemiLucas_c << endl; // where 1 is perfect match and -1 is worst.
+    cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
+    cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
+    cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
+
     return 0;
 }
