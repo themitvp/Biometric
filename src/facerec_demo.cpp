@@ -132,54 +132,60 @@ int main(int argc, const char *argv[]) {
 
     // The following line predicts the label of a given
     // test image:
-    int predictedLabel = model->predict(testSample);
+    //int predictedLabel = model->predict(testSample);
     //
     // To get the confidence of a prediction call the model with:
     //
-    //      int predictedLabel = -1;
-    //      double confidence = 0.0;
-    //      model->predict(testSample, predictedLabel, confidence);
+    int predictedLabel = -1;
+    double confidence = 0.0;
+    model->predict(testSample, predictedLabel, confidence);
     //
-    string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+    string result_message = format("Predicted class = %d / Actual class = %d. (Predict Name: %s)", predictedLabel, testLabel, model->getLabelInfo(predictedLabel).c_str());
     cout << result_message << endl;
+
+    cout << "Confidence=" << confidence << endl;
+
     if( (predictedLabel == testLabel) && !model->getLabelInfo(predictedLabel).empty() )
         cout << format("%d-th label's info: %s", predictedLabel, model->getLabelInfo(predictedLabel).c_str()) << endl;
 
     // advanced stuff
+
+    		// Sometimes you'll need to get/set internal model data,
+            // which isn't exposed by the public cv::FaceRecognizer.
+            // Since each cv::FaceRecognizer is derived from a
+            // cv::Algorithm, you can query the data.
+            //
+            // First we'll use it to set the threshold of the FaceRecognizer
+            // to 0.0 without retraining the model. This can be useful if
+            // you are evaluating the model:
+            //
+            model->set("threshold", 0.0);
+            // Now the threshold of this model is set to 0.0. A prediction
+            // now returns -1, as it's impossible to have a distance below
+            // it
+            //predictedLabel = model->predict(testSample);
+            //cout << "Predicted class = " << predictedLabel << endl;
+            // Here is how to get the eigenvalues of this Eigenfaces model:
+            Mat eigenvalues = model->getMat("eigenvalues");
+            // And we can do the same to display the Eigenvectors (read Eigenfaces):
+            Mat W = model->getMat("eigenvectors");
+            // From this we will display the (at most) first 10 Eigenfaces:
+            for (int i = 0; i < min(10, W.cols); i++) {
+                string msg = format("Eigenvalue #%d = %.5f", i, eigenvalues.at<double>(i));
+                cout << msg << endl;
+                // get eigenvector #i
+                Mat ev = W.col(i).clone();
+                // Reshape to original size & normalize to [0...255] for imshow.
+                Mat grayscale;
+                normalize(ev.reshape(1), grayscale, 0, 255, NORM_MINMAX, CV_8UC1);
+                // Show the image & apply a Jet colormap for better sensing.
+                Mat cgrayscale;
+                applyColorMap(grayscale, cgrayscale, COLORMAP_JET);
+                imshow(format("%d", i), cgrayscale);
+            }
+
     if(argc>2) {
-        // Sometimes you'll need to get/set internal model data,
-        // which isn't exposed by the public cv::FaceRecognizer.
-        // Since each cv::FaceRecognizer is derived from a
-        // cv::Algorithm, you can query the data.
-        //
-        // First we'll use it to set the threshold of the FaceRecognizer
-        // to 0.0 without retraining the model. This can be useful if
-        // you are evaluating the model:
-        //
-        model->set("threshold", 0.0);
-        // Now the threshold of this model is set to 0.0. A prediction
-        // now returns -1, as it's impossible to have a distance below
-        // it
-        predictedLabel = model->predict(testSample);
-        cout << "Predicted class = " << predictedLabel << endl;
-        // Here is how to get the eigenvalues of this Eigenfaces model:
-        Mat eigenvalues = model->getMat("eigenvalues");
-        // And we can do the same to display the Eigenvectors (read Eigenfaces):
-        Mat W = model->getMat("eigenvectors");
-        // From this we will display the (at most) first 10 Eigenfaces:
-        for (int i = 0; i < min(10, W.cols); i++) {
-            string msg = format("Eigenvalue #%d = %.5f", i, eigenvalues.at<double>(i));
-            cout << msg << endl;
-            // get eigenvector #i
-            Mat ev = W.col(i).clone();
-            // Reshape to original size & normalize to [0...255] for imshow.
-            Mat grayscale;
-            normalize(ev.reshape(1), grayscale, 0, 255, NORM_MINMAX, CV_8UC1);
-            // Show the image & apply a Jet colormap for better sensing.
-            Mat cgrayscale;
-            applyColorMap(grayscale, cgrayscale, COLORMAP_JET);
-            imshow(format("%d", i), cgrayscale);
-        }
+
         waitKey(0);
     }
     return 0;

@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/facerec_demo.cpp 
+../src/facerec_lbph.cpp 
 
 OBJS += \
-./src/facerec_demo.o 
+./src/facerec_lbph.o 
 
 CPP_DEPS += \
-./src/facerec_demo.d 
+./src/facerec_lbph.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
