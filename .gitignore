@@ -95,4 +95,4 @@ local.properties
 */cmake_install.cmake
 .DS_Store
 
-face-rec-model.txt
+face-rec-model.yml
