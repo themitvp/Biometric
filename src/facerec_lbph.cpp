@@ -20,6 +20,9 @@
 #include "opencv2/contrib/contrib.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -113,11 +116,11 @@ int main(int argc, const char *argv[]) {
     //int predictedLabel = model->predict(testSample);
     //
     // To get the confidence of a prediction call the model with:
-    //
+
     int predictedLabel = -1;
     double confidence = 0.0;
     model->predict(testSample, predictedLabel, confidence);
-    //
+
     string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
     cout << result_message << endl;
     cout << "distance:" << confidence << endl;
@@ -132,12 +135,12 @@ int main(int argc, const char *argv[]) {
     // to 0.0 without retraining the model. This can be useful if
     // you are evaluating the model:
     //
-    //model->set("threshold", 0.0);
+    //model->set("threshold", 250.0);
     // Now the threshold of this model is set to 0.0. A prediction
     // now returns -1, as it's impossible to have a distance below
     // it
     //predictedLabel = model->predict(testSample);
-    cout << "Predicted class = " << predictedLabel << endl;
+    //cout << "Predicted class = " << predictedLabel << endl;
     // Show some informations about the model, as there's no cool
     // Model data to display as in Eigenfaces/Fisherfaces.
     // Due to efficiency reasons the LBP images are not stored
@@ -157,7 +160,7 @@ int main(int argc, const char *argv[]) {
     //for (int i = 0; i < histograms.size(); i++) {
     //	cout << "Size of the histogram " << i << ": " << histograms[i].colRange(0,5) << endl;
     //}
-    double compareThemiLucas_c = compareHist(histograms[0], histograms[23], CV_COMP_CORREL);
+    /*double compareThemiLucas_c = compareHist(histograms[0], histograms[16], CV_COMP_CORREL);
     double compareThemiLucas_chi = compareHist(histograms[0], histograms[16], CV_COMP_CHISQR);
     double compareThemiLucas_bh = compareHist(histograms[0], histograms[16], CV_COMP_BHATTACHARYYA);
     double compareThemiLucas_i = compareHist(histograms[0], histograms[16], CV_COMP_INTERSECT);
@@ -166,6 +169,22 @@ int main(int argc, const char *argv[]) {
     cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
     cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
     cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
+    */
 
-    return 0;
+    for (int i = 0; i < histograms.size(); i++) {
+        //cout << "Correlation with " << i << ": " << compareHist(histograms[0], histograms[i], CV_COMP_CORREL) << endl;
+    }
+
+    double compareThemiLucas_c = compareHist(histograms[0], histograms[23], CV_COMP_CORREL);
+	double compareThemiLucas_chi = compareHist(histograms[0], histograms[23], CV_COMP_CHISQR);
+	double compareThemiLucas_bh = compareHist(histograms[0], histograms[23], CV_COMP_BHATTACHARYYA);
+	double compareThemiLucas_i = compareHist(histograms[0], histograms[23], CV_COMP_INTERSECT);
+
+	/*cout << "Correlation: " << compareThemiLucas_c << endl; // where 1 is perfect match and -1 is worst.
+	cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
+	cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
+	cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
+*/
+
+	return 0;
 }

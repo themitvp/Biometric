@@ -149,9 +149,9 @@ int main(int argc, const char *argv[]) {
     //
     string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
     cout << result_message << endl;
-    string resutl_messaget = (predictedLabel == testLabel) ? "same" : "not same";
-    cout << resutl_messaget << endl;
-    cout << "confidence: " << confidence << endl;
+    //double sim = 100.0 - 100.0/500.0*confidence;
+    //cout << "similarity score: " << sim << "%" << endl;
+    cout << "Confidence=" << confidence << endl;
     // Here is how to get the eigenvalues of this Eigenfaces model:
     Mat eigenvalues = model1->getMat("eigenvalues");
     // And we can do the same to display the Eigenvectors (read Eigenfaces):

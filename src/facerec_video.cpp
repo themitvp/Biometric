@@ -82,7 +82,7 @@ int main(int argc, const char *argv[]) {
     int im_width = images[0].cols;
     int im_height = images[0].rows;
     // Create a FaceRecognizer and train it on the given images:
-    Ptr<FaceRecognizer> model = createFisherFaceRecognizer();
+    Ptr<FaceRecognizer> model = createLBPHFaceRecognizer(1,8,8,8,250.0);
     model->train(images, labels);
     // That's it for learning the Face Recognition model. You now
     // need to create the classifier for the task of Face Detection.
@@ -128,15 +128,19 @@ int main(int argc, const char *argv[]) {
             //
             // Since I am showing the Fisherfaces algorithm here, I also show how to resize the
             // face you have just found:
-            Mat face_resized;
-            cv::resize(face, face_resized, Size(im_width, im_height), 1.0, 1.0, INTER_CUBIC);
+            //Mat face_resized;
+            //cv::resize(face, face_resized, Size(im_width, im_height), 1.0, 1.0, INTER_CUBIC);
             // Now perform the prediction, see how easy that is:
-            int prediction = model->predict(face_resized);
+            int prediction = -1;
+            double confidence = 0.0;
+            model->predict(face, prediction, confidence);
+
+            double sim = 100.0 - 100.0/250.0*confidence;
             // And finally write all we've found out to the original image!
             // First of all draw a green rectangle around the detected face:
             rectangle(original, face_i, CV_RGB(0, 255,0), 1);
             // Create the text we will annotate the box with:
-            string box_text = format("Prediction = %d", prediction);
+            string box_text = format("Prediction = %d. Similarity = %f%%", prediction, sim);
             // Calculate the position for annotated text (make sure we don't
             // put illegal values in there):
             int pos_x = std::max(face_i.tl().x - 10, 0);

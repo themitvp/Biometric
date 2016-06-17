@@ -123,7 +123,7 @@ int main(int argc, const char *argv[]) {
     //
     //      cv::createEigenFaceRecognizer(10, 123.0);
     //
-    Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
+    Ptr<FaceRecognizer> model = createEigenFaceRecognizer(10, 250.0);
     model->setLabelsInfo(labelsInfo);
     model->train(images, labels);
     string saveModelPath = "face-rec-model.txt";
@@ -142,7 +142,7 @@ int main(int argc, const char *argv[]) {
     //
     string result_message = format("Predicted class = %d / Actual class = %d. (Predict Name: %s)", predictedLabel, testLabel, model->getLabelInfo(predictedLabel).c_str());
     cout << result_message << endl;
-
+    double sim = 100.0 - 100.0/250.0*confidence;
     cout << "Confidence=" << confidence << endl;
 
     if( (predictedLabel == testLabel) && !model->getLabelInfo(predictedLabel).empty() )
