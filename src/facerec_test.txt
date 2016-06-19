@@ -1,0 +1,16 @@
+faces/test/test1.jpg;0;Themi
+faces/test/test2.jpg;1;Anders
+faces/test/test4.jpg;2;Lucas
+faces/test/test5.jpg;2;Lucas
+faces/test/test6.jpg;3;Father
+faces/test/test7.jpg;3;Father
+faces/test/test8.jpg;3;Father
+faces/test/test9.jpg;3;Father
+faces/test/test10.jpg;3;Father
+faces/test/test11.jpg;4;Grandfather
+faces/test/liselotte.jpg;5;Mother
+faces/test/mie1.jpg;6;Mie
+faces/test/mie2.jpg;6;Mie
+faces/test/mie3.jpg;6;Mie
+faces/test/mie4.jpg;6;Mie
+faces/test/nico1.jpg;6;Nico

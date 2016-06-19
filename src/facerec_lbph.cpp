@@ -30,20 +30,23 @@
 using namespace cv;
 using namespace std;
 
-static void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';') {
+static void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, std::map<int, string>& labelsInfo, char separator = ';') {
     std::ifstream file(filename.c_str(), ifstream::in);
     if (!file) {
         string error_message = "No valid input file was given, please check the given filename.";
         CV_Error(CV_StsBadArg, error_message);
     }
-    string line, path, classlabel;
+    string line, path, classlabel, info;
     while (getline(file, line)) {
         stringstream liness(line);
         getline(liness, path, separator);
-        getline(liness, classlabel);
+        getline(liness, classlabel, separator);
+        getline(liness, info);
         if(!path.empty() && !classlabel.empty()) {
-            images.push_back(imread(path, 0));
-            labels.push_back(atoi(classlabel.c_str()));
+            images.push_back(imread(path, CV_LOAD_IMAGE_GRAYSCALE));
+            int label = atoi(classlabel.c_str());
+            labels.push_back(label);
+            labelsInfo.insert(std::make_pair(label, info));
         }
     }
 }
@@ -51,19 +54,21 @@ static void read_csv(const string& filename, vector<Mat>& images, vector<int>& l
 int main(int argc, const char *argv[]) {
     // Check for valid command line arguments, print usage
     // if no arguments were given.
-    if (argc != 2) {
+    if (argc != 3) {
         cout << "usage: " << argv[0] << " <csv.ext>" << endl;
         exit(1);
     }
     // Get the path to your CSV.
     string fn_csv = string(argv[1]);
+
     // These vectors hold the images and corresponding labels.
     vector<Mat> images;
     vector<int> labels;
+    std::map<int, string> labelsInfo;
     // Read in the data. This can fail if no valid
     // input filename is given.
     try {
-        read_csv(fn_csv, images, labels);
+        read_csv(fn_csv, images, labels, labelsInfo);
     } catch (cv::Exception& e) {
         cerr << "Error opening file \"" << fn_csv << "\". Reason: " << e.msg << endl;
         // nothing more we can do
@@ -74,10 +79,8 @@ int main(int argc, const char *argv[]) {
         string error_message = "This demo needs at least 2 images to work. Please add more images to your data set!";
         CV_Error(CV_StsError, error_message);
     }
-    // Get the height from the first image. We'll need this
-    // later in code to reshape the images to their original
-    // size:
-    //int height = images[0].rows;
+
+
     // The following lines simply get the last images from
     // your dataset and remove it from the vector. This is
     // done, so that the training data (which we learn the
@@ -106,10 +109,11 @@ int main(int argc, const char *argv[]) {
     //      cv::createLBPHFaceRecognizer(2, 16);
     //
     // And if you want a threshold (e.g. 123.0) call it with its default values:
-    //
+
     //      cv::createLBPHFaceRecognizer(1,8,8,8,123.0)
     //
     Ptr<FaceRecognizer> model = createLBPHFaceRecognizer(1,8,8,8,250.0);
+    model->setLabelsInfo(labelsInfo);
     model->train(images, labels);
     // The following line predicts the label of a given
     // test image:
@@ -119,9 +123,14 @@ int main(int argc, const char *argv[]) {
 
     int predictedLabel = -1;
     double confidence = 0.0;
-    model->predict(testSample, predictedLabel, confidence);
 
-    string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+    int testingLabel = 0;
+    vector<double> testingDistance;
+
+    model->predict(testSample, predictedLabel, confidence, testingLabel, testingDistance);
+
+    //string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
+    string result_message = format("Predicted person = %s / Actual person = %s.", model->getLabelInfo(predictedLabel).c_str(), labelsInfo[testLabel].c_str());
     cout << result_message << endl;
     cout << "distance:" << confidence << endl;
     double sim = 100.0 - 100.0/250.0*confidence;
@@ -160,31 +169,30 @@ int main(int argc, const char *argv[]) {
     //for (int i = 0; i < histograms.size(); i++) {
     //	cout << "Size of the histogram " << i << ": " << histograms[i].colRange(0,5) << endl;
     //}
-    /*double compareThemiLucas_c = compareHist(histograms[0], histograms[16], CV_COMP_CORREL);
-    double compareThemiLucas_chi = compareHist(histograms[0], histograms[16], CV_COMP_CHISQR);
-    double compareThemiLucas_bh = compareHist(histograms[0], histograms[16], CV_COMP_BHATTACHARYYA);
-    double compareThemiLucas_i = compareHist(histograms[0], histograms[16], CV_COMP_INTERSECT);
+    //double compareThemiLucas_c = compareHist(histograms[0], histograms[16], CV_COMP_CORREL);
+    //double compareThemiLucas_chi = compareHist(histograms[0], histograms[16], CV_COMP_CHISQR);
+   // double compareThemiLucas_bh = compareHist(histograms[0], histograms[16], CV_COMP_BHATTACHARYYA);
+   // double compareThemiLucas_i = compareHist(histograms[0], histograms[16], CV_COMP_INTERSECT);
 
-    cout << "Correlation: " << compareThemiLucas_c << endl; // where 1 is perfect match and -1 is worst.
-    cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
-    cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
-    cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
-    */
+    //cout << "Correlation: " << compareThemiLucas_c << endl; // where 1 is perfect match and -1 is worst.
+    //cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
+    //cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
+    //cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
+
 
     for (int i = 0; i < histograms.size(); i++) {
         //cout << "Correlation with " << i << ": " << compareHist(histograms[0], histograms[i], CV_COMP_CORREL) << endl;
     }
 
-    double compareThemiLucas_c = compareHist(histograms[0], histograms[23], CV_COMP_CORREL);
-	double compareThemiLucas_chi = compareHist(histograms[0], histograms[23], CV_COMP_CHISQR);
-	double compareThemiLucas_bh = compareHist(histograms[0], histograms[23], CV_COMP_BHATTACHARYYA);
-	double compareThemiLucas_i = compareHist(histograms[0], histograms[23], CV_COMP_INTERSECT);
+    Ptr<FaceRecognizer> model2 = createLBPHFaceRecognizer(1,8,8,8,250.0);
 
-	/*cout << "Correlation: " << compareThemiLucas_c << endl; // where 1 is perfect match and -1 is worst.
-	cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
-	cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
-	cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
-*/
+    vector<Mat> images2;
+    vector<int> labels2;
+
+    images2.push_back(testSample);
+    labels2.push_back(testLabel);
+
+    model2->train(images2, labels2);
 
 	return 0;
 }

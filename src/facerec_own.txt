@@ -22,4 +22,3 @@ faces/s3/5.jpg;2;Lucas
 faces/s3/6.jpg;2;Lucas
 faces/s3/7.jpg;2;Lucas
 faces/s3/8.jpg;2;Lucas
-faces/test7.jpg;3
