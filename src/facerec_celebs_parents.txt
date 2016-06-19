@@ -1,0 +1,6 @@
+faces/celebs/hanks/tom.jpg;0;Tom Hanks
+faces/celebs/harrison/george.jpg;1;George Harrison
+faces/celebs/JonAngelina/jon.jpg;2;Jon Jolie
+faces/celebs/ritter/john.jpg;3;John Ritter
+faces/celebs/sarandon/susan.jpg;4;Susan Sarandon
+faces/celebs/sutherland/donald.jpg;5;Donald Sutherland
