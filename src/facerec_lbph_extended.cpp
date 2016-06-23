@@ -86,8 +86,14 @@ int main(int argc, const char *argv[]) {
     // The following lines create an LBPH model for
     // face recognition and train it with the images and
     // labels read from the given CSV file.
+    // These are the parameters for the LBPH model:
+    int radius = 1;
+    int neighbors = 8;
+    int grid_x = 8;
+    int grid_y = 8;
     double threshold = 250.0;
-    Ptr<FaceRecognizer> model = createLBPHFaceRecognizer(1,8,8,8,threshold);
+
+    Ptr<FaceRecognizer> model = createLBPHFaceRecognizer(radius,neighbors,grid_x,grid_y,threshold);
     model->setLabelsInfo(labelsInfo);
     model->train(images, labels);
 
@@ -118,7 +124,7 @@ int main(int argc, const char *argv[]) {
 		CV_Error(CV_StsError, error_message);
 	}
 
-    Ptr<FaceRecognizer> model2 = createLBPHFaceRecognizer(1,8,8,8,threshold);
+    Ptr<FaceRecognizer> model2 = createLBPHFaceRecognizer(radius,neighbors,grid_x,grid_y,threshold);
     model2->setLabelsInfo(labelsInfo2);
     model2->train(images2, labels2);
 
@@ -154,6 +160,7 @@ int main(int argc, const char *argv[]) {
     	minDistance.clear();
     }
 
+    // This is used for printing out the similarity score in the console.
     /*for (auto& x: testDistances) {
         cout << "test subject: " << x.first << " (" << labelsInfo2[x.first] << ")" << endl;
         for (auto& y: x.second) {
@@ -167,10 +174,11 @@ int main(int argc, const char *argv[]) {
         cout << endl;
 	}*/
 
+    // Save the similarity scores in the database file for further investigation
     try {
 		ofstream myfile;
-		 myfile.open ("database.csv");
-
+		 myfile.open ("output/database.csv");
+		 cout << "writing database file" << endl;
 		 for (auto& x: labelsInfo) {
 			 myfile << "," << x.second;
 		 }
@@ -188,7 +196,7 @@ int main(int argc, const char *argv[]) {
 			 }
 			 myfile << endl;
 		}
-
+		 cout << "Done with database file" << endl;
 		 myfile.close();
     } catch (cv::Exception& e) {
 		cerr << "Error opening file. Reason: " << e.msg << endl;
