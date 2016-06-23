@@ -42,9 +42,7 @@ void visualizeHistogram (Ptr<FaceRecognizer> model, vector<int> labels) {
 
 	vector<Mat> histograms = model->getMatVector("histograms");
 
-
 	//cout << result_message << endl;
-
 
 	for (int i = 0; i < histograms.size(); ++i) {
 		Mat const hist = histograms[i];
