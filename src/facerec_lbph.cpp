@@ -27,6 +27,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "functions.h"
+
 using namespace cv;
 using namespace std;
 
@@ -54,7 +56,7 @@ static void read_csv(const string& filename, vector<Mat>& images, vector<int>& l
 int main(int argc, const char *argv[]) {
     // Check for valid command line arguments, print usage
     // if no arguments were given.
-    if (argc != 3) {
+    if (argc != 2) {
         cout << "usage: " << argv[0] << " <csv.ext>" << endl;
         exit(1);
     }
@@ -127,7 +129,7 @@ int main(int argc, const char *argv[]) {
     int testingLabel = 0;
     vector<double> testingDistance;
 
-    model->predict(testSample, predictedLabel, confidence, testingLabel, testingDistance);
+    model->predict(testSample, predictedLabel, confidence);
 
     //string result_message = format("Predicted class = %d / Actual class = %d.", predictedLabel, testLabel);
     string result_message = format("Predicted person = %s / Actual person = %s.", model->getLabelInfo(predictedLabel).c_str(), labelsInfo[testLabel].c_str());
@@ -162,8 +164,10 @@ int main(int argc, const char *argv[]) {
             model->getInt("grid_y"),
             model->getDouble("threshold"));
     cout << model_info << endl;
+
     // We could get the histograms for example:
-    vector<Mat> histograms = model->getMatVector("histograms");
+    visualizeHistogram(model, labels);
+
     // But should I really visualize it? Probably the length is interesting:
     //cout << "Size of the histograms 0: " << histograms[0] << endl;
     //for (int i = 0; i < histograms.size(); i++) {
@@ -178,11 +182,6 @@ int main(int argc, const char *argv[]) {
     //cout << "Chi: " << compareThemiLucas_chi << endl; // 0 is perfect match and mismatch is unbounded
     //cout << "Bha : " << compareThemiLucas_bh << endl; // 0 is perfect and 1 mismatch
     //cout << "Intersect: " << compareThemiLucas_i << endl; // 1 is perfect and 0 mismatch
-
-
-    for (int i = 0; i < histograms.size(); i++) {
-        //cout << "Correlation with " << i << ": " << compareHist(histograms[0], histograms[i], CV_COMP_CORREL) << endl;
-    }
 
     Ptr<FaceRecognizer> model2 = createLBPHFaceRecognizer(1,8,8,8,250.0);
 
