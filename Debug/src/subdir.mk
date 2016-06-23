@@ -4,15 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/facerec_lbph.cpp \
+../src/facerec_lbph_extended.cpp \
 ../src/histogram.cpp 
 
 OBJS += \
-./src/facerec_lbph.o \
+./src/facerec_lbph_extended.o \
 ./src/histogram.o 
 
 CPP_DEPS += \
-./src/facerec_lbph.d \
+./src/facerec_lbph_extended.d \
 ./src/histogram.d 
 
 

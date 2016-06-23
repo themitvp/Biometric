@@ -27,6 +27,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "functions.h"
+
 using namespace cv;
 using namespace std;
 
@@ -138,6 +140,7 @@ int main(int argc, const char *argv[]) {
     // Get the LBP histograms from the testing set
     vector<Mat> histograms2 = model2->getMatVector("histograms");
 
+    visualizeHistogram(model, labels2);
     // Create to list that will be combined
     // to a 2-dimensional list.
     std::map<int, std::map<int, double> > testDistances;
