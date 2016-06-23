@@ -1,0 +1,6 @@
+faces/celebs/hanks/colin.jpg;0;Colin Hanks
+faces/celebs/harrison/dhani.jpg;1;Dhani Harrison
+faces/celebs/JonAngelina/angelina.jpg;2;Angelina Jolie
+faces/celebs/ritter/jason.jpg;3;Jason Ritter
+faces/celebs/sarandon/eva.jpg;4;Eva Sarandon
+faces/celebs/sutherland/kiefer.jpg;5;Kiefer Sutherland
