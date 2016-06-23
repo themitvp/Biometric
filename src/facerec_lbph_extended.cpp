@@ -53,21 +53,25 @@ static void read_csv(const string& filename, vector<Mat>& images, vector<int>& l
 }
 
 
-
 int main(int argc, const char *argv[]) {
     // Check for valid command line arguments, print usage
     // if no arguments were given.
     if (argc != 3) {
-        cout << "usage: " << argv[0] << " <csv.ext>" << endl;
+        cout << "The project needs 2 arguments to run: path to training set and path to testing set." << endl;
         exit(1);
     }
-    // Get the path to your CSV.
+
+    // -------------------------------
+	// First let's train LBP with the training set
+	// -------------------------------
+    // Get the path to the CSV.
     string fn_csv = string(argv[1]);
 
     // These vectors hold the images and corresponding labels.
     vector<Mat> images;
     vector<int> labels;
     std::map<int, string> labelsInfo;
+
     // Read in the data. This can fail if no valid
     // input filename is given.
     try {
@@ -97,7 +101,9 @@ int main(int argc, const char *argv[]) {
     model->setLabelsInfo(labelsInfo);
     model->train(images, labels);
 
+    // Get the generated LBP histograms
     vector<Mat> histograms = model->getMatVector("histograms");
+
 
     // -------------------------------
     // Next let's train the testing set
@@ -124,19 +130,24 @@ int main(int argc, const char *argv[]) {
 		CV_Error(CV_StsError, error_message);
 	}
 
+	// The same parameters are used here for the testing set.
     Ptr<FaceRecognizer> model2 = createLBPHFaceRecognizer(radius,neighbors,grid_x,grid_y,threshold);
     model2->setLabelsInfo(labelsInfo2);
     model2->train(images2, labels2);
 
+    // Get the LBP histograms from the testing set
     vector<Mat> histograms2 = model2->getMatVector("histograms");
 
+    // Create to list that will be combined
+    // to a 2-dimensional list.
     std::map<int, std::map<int, double> > testDistances;
-
     std::map<int, double> minDistance;
 
-
+    // Calculate the shortest distances from each probe
+    // to each data subject in the training set
     for (int i = 0; i < histograms2.size(); i++) {
     	for (int j = 0; j < histograms.size(); j++) {
+    		// Use the Chi-Squared distance as metric when comparing
     		double dist = compareHist(histograms[j], histograms2[i], CV_COMP_CHISQR);
     		int trainLabel = labels.at(j);
 
@@ -146,21 +157,26 @@ int main(int argc, const char *argv[]) {
 					minDistance[trainLabel] = dist;
 				}
             } else {
+            	// Keep the distance if it is below the threshold
+            	// otherwise discard it (-1)
             	if (dist < threshold) {
-            		//cout << "threshold: " << threshold << ". Dist: " << dist << endl;
             		minDistance[trainLabel] = dist;
             	} else {
             		minDistance[trainLabel] = -1;
             	}
             }
     	}
-    	// Done with train set
+    	// Done with training set for this probe
+    	// store data in the 2-dimensional list
     	int testLabel = labels2.at(i);
     	testDistances[testLabel] = minDistance;
+    	// Clear and run again with next probe
+    	// on the list
     	minDistance.clear();
     }
 
     // This is used for printing out the similarity score in the console.
+    // Uncomment the following to see the result in the console.
     /*for (auto& x: testDistances) {
         cout << "test subject: " << x.first << " (" << labelsInfo2[x.first] << ")" << endl;
         for (auto& y: x.second) {
@@ -174,7 +190,7 @@ int main(int argc, const char *argv[]) {
         cout << endl;
 	}*/
 
-    // Save the similarity scores in the database file for further investigation
+    // Save the similarity scores in the csv database file for further investigation
     try {
 		ofstream myfile;
 		 myfile.open ("output/database.csv");
@@ -188,6 +204,7 @@ int main(int argc, const char *argv[]) {
 			 myfile << labelsInfo2[x.first];
 			 for (auto& y: x.second) {
 				if (y.second != -1) {
+					// Calculate the similarity score from the Chi-Squared distance
 					double sim = (100.0 - 100.0/threshold*y.second)/100;
 					myfile << "," << sim;
 				} else {
