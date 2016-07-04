@@ -51,31 +51,38 @@ CONFIGURATION
 When the project has been opened with Eclipse, the project needs to be configured to work correctly:
 
 1. Right click on the project and select 'Properties' from the menu.
+
 2. In the left side navigate to 'C/C++ Build' -> 'Settings'.
+
 3. Navigate to 'GCC C++ Compiler' -> 'Includes'.
+
 4. Under 'Include paths (-l)' add the path to the installed opencv.
+
 5. Navigate to 'MacOS X C++ Linker' -> 'Libraries'.
+
 6. Add the following libraries:
-		opencv_legacy
-		opencv_gpu
-		opencv_flann
-		opencv_features2d
-		opencv_contrib
-		opencv_calib3d
-		opencv_core
-		opencv_imgproc
-		opencv_videostab
-		opencv_video
-		opencv_ts
-		opencv_superres
-		opencv_stitching
-		opencv_photo
-		opencv_ocl
-		opencv_objdetect
-		opencv_nonfree
-		opencv_ml
-		opencv_highgui
+	opencv_legacy
+	opencv_gpu
+	opencv_flann
+	opencv_features2d
+	opencv_contrib
+	opencv_calib3d
+	opencv_core
+	opencv_imgproc
+	opencv_videostab
+	opencv_video
+	opencv_ts
+	opencv_superres
+	opencv_stitching
+	opencv_photo
+	opencv_ocl
+	opencv_objdetect
+	opencv_nonfree
+	opencv_ml
+	opencv_highgui
+
 7. Under 'Library search path' add the path to the installed opencv's lib folder.
+
 8. Press 'Apply'.
 
 You are now done with the configurations.
@@ -106,6 +113,6 @@ Each folder will be briefly explained here:
 
 		- s# : Contains the training set.
 
-		- test : Contains the testing set - the probes.
+		- test : Contains the testing set (aka. the probes).
 
 	* att_faces : the AT&T public face database.
